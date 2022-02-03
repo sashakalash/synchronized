@@ -11,29 +11,30 @@ public class Seller {
     public synchronized void receiveCar() {
         try {
             System.out.println("Продавец ожидает поставку");
-            while (carShop.store.getStoreSize() != 5) {
-                Thread.sleep(CAR_MANUFACTORING_TIME);
-                System.out.println("Производитель Toyota выпустил 1 авто");
-                carShop.store.addToStore(NEW_CAR);
-                notify();
-            }
+            Thread.sleep(CAR_MANUFACTORING_TIME);
+            System.out.println("Производитель Toyota выпустил 1 авто");
+            carShop.store.add(NEW_CAR);
+            notify();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
 
     public synchronized Car sellCar() {
+        System.out.printf("%s зашел в автосалон\n", Thread.currentThread().getName());
         try {
-            while (carShop.store.getStoreSize() == 0) {
+            while (carShop.store.size() == 0) {
                 Thread.sleep(CAR_SELLING_TIME);
                 System.out.println("Продавец: Машин нет в наличии в вашей комплектации");
                 wait();
             }
             Thread.sleep(CAR_SELLING_TIME);
             System.out.println("Продавец: На складе появился автомобиль");
+            Thread.sleep(CAR_SELLING_TIME);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        return carShop.store.getFromStore();
+        System.out.printf("%s уехал на новеньком авто\n", Thread.currentThread().getName());
+        return carShop.store.remove(0);
     }
 }
