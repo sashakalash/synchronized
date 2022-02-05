@@ -1,3 +1,6 @@
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
+
 public class Seller {
     private CarShop carShop;
     private static final Car NEW_CAR = new Car("Toyota");
@@ -7,25 +10,31 @@ public class Seller {
         this.carShop = carShop;
     }
 
-    public synchronized void receiveCar() {
+    public void receiveCar() {
         try {
+            carShop.lock.lock();
             System.out.println("Производитель выпустил 1 авто");
             carShop.store.add(NEW_CAR);
-            notifyAll();
             Thread.sleep(CAR_MANUFACTURING_TIME);
+            carShop.storeEmptyCondition.signalAll();
         } catch (InterruptedException e) {
             e.printStackTrace();
+        } finally {
+            carShop.lock.unlock();
         }
     }
 
-    public synchronized void sellCar() {
+    public void sellCar() {
         try {
+            carShop.lock.lock();
             while (carShop.store.size() == 0) {
                 System.out.println("Продавец: Машин нет в наличии в вашей комплектации");
-                wait();
+                carShop.storeEmptyCondition.await();
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
+        } finally {
+            carShop.lock.unlock();
         }
         System.out.printf("%s уехал на новеньком авто\n", Thread.currentThread().getName());
         carShop.store.remove(0);
