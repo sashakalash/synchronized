@@ -1,16 +1,22 @@
 public class Seller {
     private CarShop carShop;
     private static final Car NEW_CAR = new Car("Toyota");
+    private static final int CAR_MANUFACTURING_TIME = 1000;
 
     public Seller(CarShop carShop) {
         this.carShop = carShop;
     }
 
     public synchronized void receiveCar() {
-        while (carShop.store.size() == 0) {
-            System.out.println("Производитель выпустил 1 авто");
-            carShop.store.add(NEW_CAR);
-            notifyAll();
+        try {
+            while (true) {
+                System.out.println("Производитель выпустил 1 авто");
+                carShop.store.add(NEW_CAR);
+                notifyAll();
+                Thread.sleep(CAR_MANUFACTURING_TIME);
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 

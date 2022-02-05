@@ -12,20 +12,15 @@ public class Main {
 
         ThreadGroup mainGroup = new ThreadGroup("main group");
 
-        makeScheduleExecutor(new Thread(mainGroup, shop::sellCar, "Покупатель 1"), CUSTOMER_ARRIVING_TIME);
-        makeScheduleExecutor(new Thread(mainGroup, shop::sellCar, "Покупатель 2"), CUSTOMER_ARRIVING_TIME);
-        makeScheduleExecutor(new Thread(mainGroup, shop::sellCar, "Покупатель 3"), CUSTOMER_ARRIVING_TIME);
-        makeScheduleExecutor(new Thread(mainGroup, shop::recieveCar, "Производитель"), CAR_MANUFACTURING_TIME);
 
-        while(shop.soldCars < 10) {
-            Thread.onSpinWait();
+        new Thread(mainGroup, shop::recieveCar, "Производитель").start();
+
+        while (shop.soldCars < 10) {
+            new Thread(mainGroup, shop::sellCar, "Покупатель 1").start();
+            new Thread(mainGroup, shop::sellCar, "Покупатель 2").start();
+            new Thread(mainGroup, shop::sellCar, "Покупатель 3").start();
         }
         mainGroup.interrupt();
     }
 
-    public static void makeScheduleExecutor(Runnable thread, int period) {
-        ScheduledExecutorService executor =
-                Executors.newSingleThreadScheduledExecutor();
-        executor.scheduleAtFixedRate(thread, THREAD_DELAY, period, TimeUnit.SECONDS);
-    }
 }
