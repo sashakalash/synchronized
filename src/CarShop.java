@@ -10,9 +10,9 @@ public class CarShop {
         seller.receiveCar();
     }
 
-    public Car sellCar() {
+    public void sellCar() {
+        System.out.printf("%s зашел в автосалон\n", Thread.currentThread().getName());
+        seller.sellCar();
         soldCars++;
-        return seller.sellCar();
     }
-
 }
