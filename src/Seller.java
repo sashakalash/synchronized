@@ -9,12 +9,10 @@ public class Seller {
 
     public synchronized void receiveCar() {
         try {
-            while (true) {
-                System.out.println("Производитель выпустил 1 авто");
-                carShop.store.add(NEW_CAR);
-                notifyAll();
-                Thread.sleep(CAR_MANUFACTURING_TIME);
-            }
+            System.out.println("Производитель выпустил 1 авто");
+            carShop.store.add(NEW_CAR);
+            notifyAll();
+            Thread.sleep(CAR_MANUFACTURING_TIME);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
