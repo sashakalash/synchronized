@@ -11,12 +11,10 @@ public class Main {
     public static void main(String[] args) {
         final CarShop shop = new CarShop();
 
-        ThreadGroup mainGroup = new ThreadGroup("main group");
-
-        ScheduledExecutorService ex1 = makeScheduleExecutor(new Thread(mainGroup, shop::sellCar, "Покупатель 1"), CUSTOMER_ARRIVING_TIME);
-        ScheduledExecutorService ex2 = makeScheduleExecutor(new Thread(mainGroup, shop::sellCar, "Покупатель 2"), CUSTOMER_ARRIVING_TIME);
-        ScheduledExecutorService ex3 = makeScheduleExecutor(new Thread(mainGroup, shop::sellCar, "Покупатель 3"), CUSTOMER_ARRIVING_TIME);
-        ScheduledExecutorService manEx = makeScheduleExecutor(new Thread(mainGroup, shop::recieveCar, "Производитель"), CAR_MANUFACTURING_TIME);
+        ScheduledExecutorService ex1 = makeScheduleExecutor(new Thread(null, shop::sellCar, "Покупатель 1"), CUSTOMER_ARRIVING_TIME);
+        ScheduledExecutorService ex2 = makeScheduleExecutor(new Thread(null, shop::sellCar, "Покупатель 2"), CUSTOMER_ARRIVING_TIME);
+        ScheduledExecutorService ex3 = makeScheduleExecutor(new Thread(null, shop::sellCar, "Покупатель 3"), CUSTOMER_ARRIVING_TIME);
+        ScheduledExecutorService manEx = makeScheduleExecutor(new Thread(null, shop::recieveCar, "Производитель"), CAR_MANUFACTURING_TIME);
 
         while (shop.soldCars <= 10) {
             Thread.onSpinWait();
