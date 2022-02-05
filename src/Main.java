@@ -1,3 +1,4 @@
+import java.util.Arrays;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -12,15 +13,24 @@ public class Main {
 
         ThreadGroup mainGroup = new ThreadGroup("main group");
 
+        ScheduledExecutorService ex1 = makeScheduleExecutor(new Thread(mainGroup, shop::sellCar, "Покупатель 1"), CUSTOMER_ARRIVING_TIME);
+        ScheduledExecutorService ex2 = makeScheduleExecutor(new Thread(mainGroup, shop::sellCar, "Покупатель 2"), CUSTOMER_ARRIVING_TIME);
+        ScheduledExecutorService ex3 = makeScheduleExecutor(new Thread(mainGroup, shop::sellCar, "Покупатель 3"), CUSTOMER_ARRIVING_TIME);
+        ScheduledExecutorService manEx = makeScheduleExecutor(new Thread(mainGroup, shop::recieveCar, "Производитель"), CAR_MANUFACTURING_TIME);
 
-        new Thread(mainGroup, shop::recieveCar, "Производитель").start();
-
-        while (shop.soldCars < 10) {
-            new Thread(mainGroup, shop::sellCar, "Покупатель 1").start();
-            new Thread(mainGroup, shop::sellCar, "Покупатель 2").start();
-            new Thread(mainGroup, shop::sellCar, "Покупатель 3").start();
+        while (shop.soldCars <= 10) {
+            Thread.onSpinWait();
         }
-        mainGroup.interrupt();
+        ex1.shutdown();
+        ex2.shutdown();
+        ex3.shutdown();
+        manEx.shutdown();
     }
 
+    public static ScheduledExecutorService makeScheduleExecutor(Runnable thread, int period) {
+        ScheduledExecutorService executor =
+                Executors.newSingleThreadScheduledExecutor();
+        executor.scheduleAtFixedRate(thread, THREAD_DELAY, period, TimeUnit.SECONDS);
+       return executor;
+    }
 }
